@@ -1,0 +1,29 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/uuid": "^10.0.0",
+    "type-fest": "^4.26.1"
+  },
+  "dependencies": {
+    "c12": "^2.0.1",
+    "fs-extra": "^11.2.0",
+    "giget": "^1.2.3",
+    "jiti": "^2.3.3",
+    "nuxt": "^3.13.2",
+    "uuid": "^10.0.0",
+    "vue": "latest",
+    "vue-router": "latest",
+    "vue-tsc": "^2.1.6",
+    "zod": "^3.23.8"
+  }
+}
