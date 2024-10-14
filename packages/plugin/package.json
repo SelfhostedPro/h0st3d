@@ -1,5 +1,5 @@
 {
-  "name": "@hostit/plugin",
+  "name": "@h0st3d/plugin",
   "module": "index.ts",
   "type": "module",
   "private": false,
