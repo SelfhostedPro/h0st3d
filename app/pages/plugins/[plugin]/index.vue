@@ -1,32 +1,39 @@
 <template>
-    <div>
-        <component :is="dynamicComponent" />
-    </div>
+  <div>
+    <component :is="dynamicComponent" v-if="dynamicComponent" />
+    <div v-else>Loading plugin component...</div>
+  </div>
 </template>
+
 <script setup lang="ts">
-import type { H0st3dPlugin } from '~~/packages/plugin';
+import { ref, defineAsyncComponent, onMounted } from 'vue'
+import type { H0st3dPlugin } from '~~/packages/plugin'
+
 const route = useRoute()
 const name = route.params.plugin as string
 const pluginInfo = await usePluginInfo(name)
 const { data: plugin, error: fetchError } = await useFetch<H0st3dPlugin>(`/api/${pluginInfo.name}`)
+
 if (!plugin.value || fetchError.value) {
-    console.error(fetchError.value)
+  console.error(fetchError.value)
 }
-// console.log('plugin value:', plugin.value)
 
-if (!plugin.value!.pages![0]!.parentPath) {
-    throw new Error('No pages found')
-}
-// console.log(`fetching plugin page: ${plugin.value!.pages![0]!.parentPath}/${plugin.value!.pages![0]!.name}`)
+const dynamicComponent = ref(null)
 
-const dynamicComponent = defineAsyncComponent(() => {
-    const firstPage = plugin.value?.pages?.[0]
-    try {
-        // return import(/* @vite-ignore */ `${firstPage?.parentPath}/${firstPage?.name}`)
-        return import(/* @vite-ignore */ `/data/plugins/${name}/dist/app/pages/${firstPage?.name}`)
-    } catch (err) {
-        throw createError(`Failed to load plugin component: ${err}`)
-    }
+onMounted(async () => {
+  if (plugin.value?.pages?.[0]) {
+    const firstPage = plugin.value.pages[0]
+    const componentPath = `/data/plugins/${name}/dist/app/pages/${firstPage.name}`
+    
+    dynamicComponent.value = defineAsyncComponent(() => 
+      import(/* @vite-ignore */ componentPath)
+        .catch(err => {
+          console.error(`Failed to load plugin component: ${err}`)
+          return { template: '<div>Error loading component</div>' }
+        })
+    )
+  } else {
+    console.error('No pages found for this plugin')
+  }
 })
-
 </script>
