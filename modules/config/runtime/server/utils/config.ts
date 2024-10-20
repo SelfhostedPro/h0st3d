@@ -1,14 +1,13 @@
 import { watchConfig, type WatchConfigOptions } from "c12"
 import fs from 'fs-extra'
 import { stringifyYAML } from 'confbox'
-import { resolve } from 'path'
-import { join } from 'path'
+import { resolve, join } from 'path'
 import { ZodError } from 'zod'
 import * as crypto from 'crypto';
 import { promises as fsPromises } from 'fs'
-import type { ConfigSecrets } from "~~/modules/config/types/secrets"
+import type { ConfigSecrets } from "../../../types/secrets"
 import { defaultConfig } from "./default"
-import { BaseConfigSchema, type BaseConfig } from "~~/modules/config/types/config"
+import { BaseConfigSchema, type BaseConfig } from "../../../types/config"
 
 const nuxtConfig = useRuntimeConfig()
 
@@ -70,7 +69,7 @@ export const useConfig = async (): Promise<BaseConfig> => {
     return config
 }
 
-export const backupConfig = async (config: any, path: string) => {
+export const backupConfig = async (config: unknown, path: string) => {
     await fsPromises.writeFile(
         resolve(path, 'config.bak.yaml'),
         stringifyYAML(config, { indent: 2 }),
@@ -126,24 +125,14 @@ export const getSecrets = async (): Promise<ConfigSecrets> => {
     try {
         const secrets = await fsPromises.readFile(configPaths.secrets, 'utf8')
         const parsedSecrets = JSON.parse(secrets) as ConfigSecrets
-        if (isValidSecrets(parsedSecrets)) {
+        if (SecretsSchema.safeParse(parsedSecrets).success) {
             return parsedSecrets
         }
-    } catch { }
+    } catch {
+        return generateSecretTokens()
+    }
     return generateSecretTokens()
-}
 
-const isValidSecrets = (secrets: any): secrets is ConfigSecrets => {
-    return (
-        secrets &&
-        typeof secrets === 'object' &&
-        typeof secrets.accessSecret === 'string' &&
-        typeof secrets.refreshSecret === 'string' &&
-        typeof secrets.authSecret === 'string' &&
-        typeof secrets.passphraseSecret === 'object' &&
-        typeof secrets.passphraseSecret.key === 'string' &&
-        typeof secrets.passphraseSecret.iv === 'string'
-    )
 }
 
 const generateSecretTokens = async (): Promise<ConfigSecrets> => {

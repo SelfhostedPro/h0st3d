@@ -1,4 +1,4 @@
-
+import { usePlugin } from '../../../utils/runner'
 export default defineEventHandler(async (event) => {
     const rest = event.context.params?.plugin?.split('/')
     const name = rest?.shift()
@@ -9,6 +9,6 @@ export default defineEventHandler(async (event) => {
     if (!plugin) {
         throw createError({ statusCode: 404, statusMessage: 'Plugin not found' })
     }
-    
-    return usePlugin(plugin, { ...rest})
+
+    return usePlugin(plugin, { ...rest })
 })

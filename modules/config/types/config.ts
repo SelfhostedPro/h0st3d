@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { SecretsSchema } from './secrets'
-import { PluginRegistrySchema, getPluginSchema } from '~~/modules/types/types/PluginManager'
+import { PluginRegistrySchema, getPluginSchema } from '@h0st3d/types'
 
 export const BaseConfigSchema = z.object({
     name: z.string().optional(),

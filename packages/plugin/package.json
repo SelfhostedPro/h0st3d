@@ -1,12 +1,22 @@
 {
   "name": "@h0st3d/plugin",
+  "version": "0.0.1-4",
   "module": "index.ts",
   "type": "module",
   "private": false,
+  "scripts": {
+    "dev": "bun run --watch index.ts"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "vue-router": "^4.4.5"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@h0st3d/types": "link:@h0st3d/types",
+    "@nuxt/schema": "^3.13.2",
+    "vue": "^3.5.12"
   }
 }

@@ -1,5 +1,6 @@
-import { defineNuxtModule, addImportsDir, createResolver, addServerPlugin, addImports, addServerImportsDir } from '@nuxt/kit'
+import { defineNuxtModule, addImportsDir, createResolver, addServerPlugin, addRouteMiddleware } from '@nuxt/kit'
 import { defu } from 'defu'
+import { addServerImportsDir, addServerScanDir } from 'nuxt/kit'
 import { join } from 'path'
 
 
@@ -42,7 +43,15 @@ export default defineNuxtModule({
         nuxt.options.runtimeConfig.hosted = nuxt.options.runtimeConfig.hosted ||= {
             ...configOptions
         }
-        addServerImportsDir(resolver.resolve('runtime/server/utils'))
+        addImportsDir(resolver.resolve('runtime/composables'))
+        addRouteMiddleware({
+            name: 'config',
+            path: resolver.resolve('runtime/middleware/config.ts'),
+            global: true
+        })
+        addServerScanDir(resolver.resolve('runtime/server'))
+
+        addServerImportsDir(resolver.resolve('types'))
         addImportsDir(resolver.resolve('types'))
         addServerPlugin(resolver.resolve('plugin/01-server-config.ts'))
     }
