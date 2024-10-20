@@ -1,4 +1,4 @@
-import { type BaseConfig } from "~~/modules/config/types/config";
+import type { BaseConfig } from "../../../types/config.js";
 
 
 export const defaultConfig: BaseConfig = {
