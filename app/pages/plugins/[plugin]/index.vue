@@ -21,14 +21,17 @@ import type { H0st3dPlugin } from '~~/packages/plugin'
 const route = useRoute()
 const name = route.params.plugin as string
 const pluginInfo = await usePluginInfo(name)
-const { data: pluginData, error: fetchError } = await useFetch(`/api/${pluginInfo.name}`, {
-  onResponseError({ response }) {
-    error.value = `Failed to fetch plugin data: ${response.statusText}`
-  }
-})
+const { data: pluginData, error: fetchError } = await useFetch<{
+  type: 'directory' | 'file' | 'error';
+  name?: string;
+  content?: string;
+  files?: string[];
+  message?: string;
+  stack?: string;
+}>(`/api/${pluginInfo.name}`)
 
-const dynamicComponent = ref(null)
-const error = ref(null)
+const dynamicComponent = ref<any>(null)
+const error = ref<string | null>(null)
 
 onMounted(async () => {
   if (fetchError.value) {
@@ -41,19 +44,17 @@ onMounted(async () => {
     return
   }
 
-  if (pluginData.value.type === 'file') {
+  if (pluginData.value.type === 'file' && pluginData.value.content) {
     try {
-      // Assuming the content is a valid Vue component
       const component = defineAsyncComponent(() => 
         Promise.resolve({
-          template: pluginData.value.content
+          template: pluginData.value?.content
         })
       )
       dynamicComponent.value = component
     } catch (err) {
-      error.value = `Failed to load plugin component: ${err.message}`
+      error.value = `Failed to load plugin component: ${(err as Error).message}`
     }
   }
-  // If it's a directory, we're just displaying that in the template
 })
 </script>
