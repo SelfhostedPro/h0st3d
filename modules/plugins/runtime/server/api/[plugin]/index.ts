@@ -3,11 +3,6 @@ import { join } from 'path'
 import { usePlugin } from '../../utils/runner'
 import type { GetPlugin } from '@h0st3d/types'
 
-function stripScriptAndStyle(content: string): string {
-  return content.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-                .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
-}
-
 export default defineEventHandler(async (event) => {
     try {
         const rest = event.context.params?.plugin?.split('/')
@@ -46,7 +41,7 @@ export default defineEventHandler(async (event) => {
             return {
                 type: 'file' as const,
                 name: firstPage.name,
-                content: stripScriptAndStyle(pageContent)
+                content: pageContent // Send the full content, including script and style tags
             }
         }
     } catch (error) {
