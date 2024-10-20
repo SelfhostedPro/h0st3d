@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineAsyncComponent, onMounted } from 'vue'
+import { ref, markRaw, defineAsyncComponent, onMounted } from 'vue'
 import type { H0st3dPlugin } from '~~/packages/plugin'
 
 const route = useRoute()
@@ -46,11 +46,11 @@ onMounted(async () => {
 
   if (pluginData.value.type === 'file' && pluginData.value.content) {
     try {
-      const component = defineAsyncComponent(() => 
+      const component = markRaw(defineAsyncComponent(() => 
         Promise.resolve({
           template: pluginData.value?.content
         })
-      )
+      ))
       dynamicComponent.value = component
     } catch (err) {
       error.value = `Failed to load plugin component: ${(err as Error).message}`
