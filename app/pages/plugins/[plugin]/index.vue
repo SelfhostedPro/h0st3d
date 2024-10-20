@@ -2,6 +2,14 @@
   <div>
     <div v-if="error">Error: {{ error }}</div>
     <component :is="dynamicComponent" v-else-if="dynamicComponent" />
+    <div v-else-if="pluginData">
+      <div v-if="pluginData.type === 'directory'">
+        Directory: {{ pluginData.name }}
+      </div>
+      <div v-else-if="pluginData.type === 'file'">
+        <pre>{{ pluginData.content }}</pre>
+      </div>
+    </div>
     <div v-else>Loading plugin component...</div>
   </div>
 </template>
@@ -13,7 +21,7 @@ import type { H0st3dPlugin } from '~~/packages/plugin'
 const route = useRoute()
 const name = route.params.plugin as string
 const pluginInfo = await usePluginInfo(name)
-const { data: plugin, error: fetchError } = await useFetch<H0st3dPlugin>(`/api/${pluginInfo.name}`, {
+const { data: pluginData, error: fetchError } = await useFetch(`/api/${pluginInfo.name}`, {
   onResponseError({ response }) {
     error.value = `Failed to fetch plugin data: ${response.statusText}`
   }
@@ -28,20 +36,24 @@ onMounted(async () => {
     return
   }
 
-  if (!plugin.value?.pages?.length) {
-    error.value = 'No pages found for this plugin'
+  if (!pluginData.value) {
+    error.value = 'No data found for this plugin'
     return
   }
 
-  const firstPage = plugin.value.pages[0]
-  const componentPath = `/data/plugins/${name}/dist/app/pages/${firstPage.name}`
-  
-  try {
-    dynamicComponent.value = defineAsyncComponent(() => 
-      import(/* @vite-ignore */ componentPath)
-    )
-  } catch (err) {
-    error.value = `Failed to load plugin component: ${err.message}`
+  if (pluginData.value.type === 'file') {
+    try {
+      // Assuming the content is a valid Vue component
+      const component = defineAsyncComponent(() => 
+        Promise.resolve({
+          template: pluginData.value.content
+        })
+      )
+      dynamicComponent.value = component
+    } catch (err) {
+      error.value = `Failed to load plugin component: ${err.message}`
+    }
   }
+  // If it's a directory, we're just displaying that in the template
 })
 </script>

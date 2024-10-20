@@ -1,4 +1,4 @@
-import { readFile } from 'fs/promises'
+import { readFile, stat } from 'fs/promises'
 import { join } from 'path'
 import { usePlugin } from '../../utils/runner'
 
@@ -22,26 +22,25 @@ export default defineEventHandler(async (event) => {
     const pagePath = join(plugin.path, 'app', 'pages', firstPage.name)
 
     try {
-        const pageContent = await readFile(pagePath, 'utf-8')
-        return pageContent
+        const stats = await stat(pagePath)
+        if (stats.isDirectory()) {
+            // If it's a directory, return the directory structure
+            return {
+                type: 'directory',
+                name: firstPage.name,
+                path: pagePath
+            }
+        } else {
+            // If it's a file, read and return its content
+            const pageContent = await readFile(pagePath, 'utf-8')
+            return {
+                type: 'file',
+                name: firstPage.name,
+                content: pageContent
+            }
+        }
     } catch (error) {
         console.error(`Error reading plugin page: ${error}`)
         throw createError({ statusCode: 500, statusMessage: 'Error reading plugin page' })
     }
 })
-
-// import { usePlugin } from '../../utils/runner'
-// export default defineEventHandler(async (event) => {
-//     // console.log('event', event)
-//     const rest = event.context.params?.plugin?.split('/')
-//     const name = rest?.shift()
-//     if (!name) {
-//         throw createError({ statusCode: 400, statusMessage: 'Invalid plugin name' })
-//     }
-//     const plugin = await getPlugin(name)
-//     if (!plugin) {
-//         throw createError({ statusCode: 404, statusMessage: 'Plugin not found' })
-//     }
-
-//     return usePlugin(plugin, { ...rest })
-// })
