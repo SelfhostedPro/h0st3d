@@ -1,7 +1,8 @@
 import { readFile } from 'fs/promises'
+import { join } from 'path'
 import { usePlugin } from '../../utils/runner'
+
 export default defineEventHandler(async (event) => {
-    // console.log('event', event)
     const rest = event.context.params?.plugin?.split('/')
     const name = rest?.shift()
     if (!name) {
@@ -12,8 +13,21 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 404, statusMessage: 'Plugin not found' })
     }
     const plugin = await usePlugin(pluginInfo, { ...rest })
-    const page = plugin.pages?.[0]
-    return await readFile(`${page?.parentPath}`)
+    
+    if (!plugin.pages || plugin.pages.length === 0) {
+        throw createError({ statusCode: 404, statusMessage: 'No pages found for this plugin' })
+    }
+
+    const firstPage = plugin.pages[0]
+    const pagePath = join(plugin.path, 'app', 'pages', firstPage.name)
+
+    try {
+        const pageContent = await readFile(pagePath, 'utf-8')
+        return pageContent
+    } catch (error) {
+        console.error(`Error reading plugin page: ${error}`)
+        throw createError({ statusCode: 500, statusMessage: 'Error reading plugin page' })
+    }
 })
 
 // import { usePlugin } from '../../utils/runner'
