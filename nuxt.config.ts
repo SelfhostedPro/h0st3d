@@ -29,7 +29,7 @@ export default defineNuxtConfig({
   },
 
   vue: {
-    // runtimeCompiler: true
+    runtimeCompiler: true
   },
   vite: {
     optimizeDeps: {
