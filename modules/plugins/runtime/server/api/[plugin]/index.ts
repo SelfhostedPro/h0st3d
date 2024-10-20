@@ -1,6 +1,7 @@
 import { readFile, stat, readdir } from 'fs/promises'
 import { join } from 'path'
 import { usePlugin } from '../../utils/runner'
+import type { GetPlugin } from '@h0st3d/types'
 
 export default defineEventHandler(async (event) => {
     try {
@@ -9,7 +10,7 @@ export default defineEventHandler(async (event) => {
         if (!name) {
             throw createError({ statusCode: 400, statusMessage: 'Invalid plugin name' })
         }
-        const pluginInfo = await getPlugin(name)
+        const pluginInfo = await getPlugin(name) as GetPlugin
         if (!pluginInfo) {
             throw createError({ statusCode: 404, statusMessage: 'Plugin not found' })
         }
@@ -24,7 +25,7 @@ export default defineEventHandler(async (event) => {
             throw createError({ statusCode: 404, statusMessage: 'No first page found for this plugin' })
         }
 
-        const pagePath = join(plugin.path || '', 'app', 'pages', firstPage.name)
+        const pagePath = join(plugin.path, 'app', 'pages', firstPage.name)
 
         const stats = await stat(pagePath)
         if (stats.isDirectory()) {
