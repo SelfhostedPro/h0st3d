@@ -1,5 +1,8 @@
 {
   // https://nuxt.com/docs/guide/concepts/typescript
-  "exclude": ["data", "packages", "venv"],
+  "exclude": ["data/*", "packages", "venv"],
+  "compilerOptions": {
+    "types": ["bun"]
+  },
   "extends": "./.nuxt/tsconfig.json"
 }

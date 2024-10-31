@@ -11,20 +11,20 @@
     "lint": "eslint ."
   },
   "devDependencies": {
+    "@h0st3d/types": "link:@h0st3d/types",
+    "@nuxt/eslint": "^0.6.0",
+    "@nuxt/module-builder": "^0.8.4",
     "@types/fs-extra": "^11.0.4",
     "@types/uuid": "^10.0.0",
     "type-fest": "^4.26.1"
   },
   "dependencies": {
-    "@h0st3d/plugin": "link:@h0st3d/plugin",
-    "@h0st3d/types": "link:@h0st3d/types",
-    "@nuxt/eslint": "^0.6.0",
     "c12": "^2.0.1",
     "fs-extra": "^11.2.0",
     "giget": "^1.2.3",
+    "node-fetch-native": "1.6.4",
     "jiti": "^2.3.3",
     "nuxt": "^3.13.2",
-    "unbuild": "^2.0.0",
     "uuid": "^10.0.0",
     "vue": "latest",
     "vue-router": "latest",

@@ -16,11 +16,13 @@ export const addPlugin = async (plugin: Plugin) => {
     const provider = registryProvider(_registry.url, { auth: _registry.auth })
 
     await ensureDir(`${dataPath}/plugins/${plugin.name}`)
+    await ensureDir(`${dataPath}/downloads/plugins/${plugin.name}`)
+
 
     console.log(`Downloading plugin: ${_registry.name}:${plugin.name}`)
     const { _source, _dir } = await downloadTemplate(`provider:${plugin.name}`, {
         providers: { provider },
-        cwd: `${dataPath}/plugins/`,
+        cwd: `${dataPath}/downloads/plugins/`,
         dir: plugin.name,
         install: true
     })
@@ -55,10 +57,14 @@ export const updatePlugin = async (name: string) => {
         throw createError(`Registry provider ${plugin.provider} not found`)
     }
     const provider = registryProvider(_registry.url, { auth: _registry.auth })
+
+    await ensureDir(`${dataPath}/plugins/${plugin.name}`)
+    await ensureDir(`${dataPath}/downloads/plugins/${plugin.name}`)
+
     // Download latest version of plugin
     const { _source, _dir } = await downloadTemplate(`provider:${plugin.name}`, {
         providers: { provider },
-        cwd: `${dataPath}/plugins/`,
+        cwd: `${dataPath}/downloads/plugins/`,
         forceClean: true,
         dir: plugin.name,
         install: true

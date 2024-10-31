@@ -15,10 +15,10 @@ export interface ConfigOptions {
     dataPath: string
 }
 
-const defaultConfigOptions: ConfigOptions =
+export const defaultConfigOptions: ConfigOptions =
 {
-    configPath: process.env.NODE_ENV === 'production' ? '../config' : './config',
-    dataPath: process.env.NODE_ENV === 'production' ? '../data' : './data'
+    configPath: process.env.NODE_ENV === 'production' ? './config' : './config',
+    dataPath: process.env.NODE_ENV === 'production' ? './data' : './data'
 }
 
 export default defineNuxtModule({

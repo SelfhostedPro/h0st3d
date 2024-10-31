@@ -1,15 +1,19 @@
-import { defineNuxtModule, addImportsDir, createResolver, addServerPlugin } from '@nuxt/kit'
-import { addServerScanDir, installModule } from 'nuxt/kit'
+import { defineNuxtModule, addImportsDir, createResolver, addServerPlugin, installModule, useNitro } from '@nuxt/kit'
+import { addServerScanDir } from 'nuxt/kit'
 import configModule from '../config'
 import { loadConfig } from 'c12'
-import type { NuxtConfigLayer } from 'nuxt/schema'
+import { join } from 'pathe'
+import { defaultConfigOptions } from '../config'
 
 export default defineNuxtModule({
     meta: {
         name: 'plugins',
     },
     async setup(resolvedOptions, nuxt) {
+        console.log("initializing plugin module...")
         await installModule(configModule, null, nuxt)
+
+
         const resolver = createResolver(import.meta.url)
 
         const config = await loadConfig<BaseConfig>({
@@ -20,22 +24,12 @@ export default defineNuxtModule({
             dotenv: false,
         })
 
-        const plugins = config.config.plugins.installed
+        const pluginPath = join(defaultConfigOptions.dataPath, 'plugins/')
+        nuxt.options.modules.push(pluginPath)
 
-        plugins.map(async plugin => {
-            console.log(`Installing plugin: ${plugin.name}`)
-            const pluginResolver = createResolver(plugin.path)
-            nuxt.options._layers.push(
-                {
-                    config: {
-                        srcDir: pluginResolver.resolve('.'),
-                        rootDir: pluginResolver.resolve('.'),
-                        ...nuxt.options.config
-                    },
-                    cwd: pluginResolver.resolve('.'),
-                } as NuxtConfigLayer
-            )
-        })
+
+        console.log('nuxt modules:', nuxt.options.modules)
+
 
         addImportsDir(resolver.resolve('./runtime/composables'))
 

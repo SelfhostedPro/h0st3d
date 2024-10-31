@@ -1,5 +1,8 @@
-export default defineNitroPlugin(async () => {
+
+export default defineNitroPlugin(async (nitro) => {
+
     const config = await useConfig()
+
     if (config.plugins.installed.length == 0) {
         console.log('No plugins installed')
         return
